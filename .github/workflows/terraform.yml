@@ -39,17 +39,12 @@ jobs:
           aws-region:         ${{ secrets.AWS_REGION }}
           mask-aws-account-id: true
 
-      # - name: Setup Terraform
-      #   uses: hashicorp/setup-terraform@v3
-      #   with:
-      #     terraform_version: 1.7.6
-
       - name: Terraform Init
         run: |
-          terraform init                                                                \
-            -backednd-config="bucket=${{ secrets.AWS_S3_BUCKET }}"                      \
-            -backend-config="encrypt=true"                                              \
-            -backend-config="key=${{ github.event.repository.name }}/terraform.tfstate" \
+          terraform init                                                                `
+            -backend-config="bucket=${{ secrets.AWS_S3_BUCKET }}"                       `
+            -backend-config="encrypt=true"                                              `
+            -backend-config="key=${{ github.event.repository.name }}/terraform.tfstate" `
             -backend-config="region=${{ secrets.AWS_REGION }}"
 
       - name: Terraform Validate
