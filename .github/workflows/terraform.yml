@@ -3,7 +3,7 @@ name: "Terraform OPNSense (FW02 via self-hosted runner)"
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ ubuntu-latest ]
 
 permissions:
   id-token: write
