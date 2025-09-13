@@ -1,0 +1,63 @@
+name: "Terraform OPNSense (FW02 via self-hosted runner)"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: tf-tcnhq-fw00-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  terraform:
+    runs-on: [ self-hosted ]
+    env:
+      # AWS Credentials
+      TF_VAR_AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      TF_VAR_AWS_REGION:    ${{ secrets.AWS_REGION }}
+      TF_VAR_BACKEND_KEY:  "${{ github.event.repository.name }}/terraform.tfstate"
+
+      # OPNSense FW02
+      TF_VAR_fw02_host:       ${{ secrets.FW02_HOST }}
+      TF_VAR_fw02_api_key:    ${{ secrets.FW02_TERRAFORM_KEY }}
+      TF_VAR_fw02_api_secret: ${{ secrets.FW02_TERRAFORM_SECRET }}
+      TF_IN_AUTOMATION:       "true"
+
+    steps:
+      - name: Checkout GitHub Repository
+        uses: actions/checkout@v4
+
+      - name: Initalize Temporary AWS Credentials (via OIDC)
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume:     ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region:         ${{ secrets.AWS_REGION }}
+          mask-aws-account-id: true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.6
+
+      - name: Terraform Init
+        run: |
+          terraform init                                                                \
+            -backednd-config="bucket=${{ secrets.AWS_S3_BUCKET }}"                      \
+            -backend-config="encrypt=true"                                              \
+            -backend-config="key=${{ github.event.repository.name }}/terraform.tfstate" \
+            -backend-config="region=${{ secrets.AWS_REGION }}"
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
