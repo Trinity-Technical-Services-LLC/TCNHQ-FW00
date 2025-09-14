@@ -23,7 +23,7 @@ jobs:
       TF_VAR_BACKEND_KEY:  "${{ github.event.repository.name }}/terraform.tfstate"
 
       # OPNSense FW02
-      TF_VAR_fw02_url:        ${{ secrets.FW02_URL }}
+      TF_VAR_fw02_uri:        ${{ secrets.FW02_URI }}
       TF_VAR_fw02_api_key:    ${{ secrets.FW02_TERRAFORM_KEY }}
       TF_VAR_fw02_api_secret: ${{ secrets.FW02_TERRAFORM_SECRET }}
       TF_IN_AUTOMATION:       "true"
