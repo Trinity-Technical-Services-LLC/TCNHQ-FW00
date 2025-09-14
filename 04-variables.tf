@@ -1,7 +1,7 @@
 
 #region ------ [ OPNSense FW02 ] -------------------------------------------------------------- #
 
-variable "fw02_url" {
+variable "fw02_uri" {
   type        = string
   sensitive   = true
   description = "Base URL for the OPNsense FW02 API"
