@@ -4,5 +4,5 @@ resource "opnsense_interfaces_vlan" "vlan_100" {
   device      = "vlan0.100"
   parent      = "lagg0"
   priority    = "0"
-  tagg        = "100"
+  tag         = "100"
 }
