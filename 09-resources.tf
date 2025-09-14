@@ -1,5 +1,5 @@
 
-resource "opnsense_interfaces_vlan" "100" {
+resource "opnsense_interfaces_vlan" "vlan_100" {
   description = "VLAN 100 - Gateway"
   device      = "vlan0.100"
   parent      = "lagg0"
